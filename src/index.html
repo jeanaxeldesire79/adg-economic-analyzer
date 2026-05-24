@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ECOWAS Economic Analyzer — ADG</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#b8942e;--gold-light:#d4a843;--gold-dim:rgba(184,148,46,0.12);--gold-soft:rgba(184,148,46,0.06);--bg:#080c14;--bg2:#0c1424;--bg3:#111a2e;--card:rgba(255,255,255,0.014);--card-hover:rgba(255,255,255,0.025);--border:rgba(255,255,255,0.05);--border-focus:rgba(184,148,46,0.4);--text:rgba(255,255,255,0.45);--text-med:rgba(255,255,255,0.65);--text-high:rgba(255,255,255,0.88);--text-dim:rgba(255,255,255,0.15);--ease:cubic-bezier(0.4,0,0.2,1);--ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0,0,0.2,1)}*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);scroll-behavior:smooth;-webkit-font-smoothing:antialiased}body{min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.08)}
+header{background:rgba(8,12,20,0.72);backdrop-filter:blur(28px) saturate(1.4);border-bottom:1px solid var(--border);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+header .brand{display:flex;align-items:center;gap:10px}
+header .brand-icon{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--bg);flex-shrink:0}
+header h1{font-size:15px;font-weight:600;color:var(--text-high);letter-spacing:-0.2px}
+header h1 span{color:var(--gold)}
+header nav{display:flex;gap:4px}
+header nav a{color:var(--text-dim);font-size:11px;text-decoration:none;padding:5px 10px;border-radius:4px;transition:all 0.2s var(--ease);cursor:pointer}
+header nav a:hover{color:var(--gold);background:var(--gold-soft)}
+header nav a.active{color:var(--gold);background:var(--gold-dim)}
+.container{max-width:1140px;margin:0 auto;padding:28px 40px;width:100%;flex:1;animation:fadeIn 0.4s var(--ease-out)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes shimmer{0%{background-position:-200px 0}100%{background-position:calc(200px + 100%) 0}}
+.two-panel{display:grid;grid-template-columns:320px 1fr;gap:16px;margin-bottom:20px;align-items:start}
+.control-group{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px}
+.control-group h3{font-size:11px;font-weight:600;color:var(--text-dim);margin-bottom:14px;letter-spacing:0.5px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.control-group h3::after{content:'';flex:1;height:1px;background:var(--border)}
+.ctrl-field{margin-bottom:12px}.ctrl-field:last-of-type{margin-bottom:0}
+.ctrl-field label{font-size:10px;font-weight:500;color:var(--text-dim);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px}
+.select-wrap{position:relative}
+.select-wrap::after{content:'\25be';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:8px;color:var(--text-dim);pointer-events:none}
+select,input[type="number"],.search-input{width:100%;padding:8px 10px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:6px;color:var(--text-med);font-size:12px;font-family:'Inter',sans-serif;outline:none;transition:all 0.2s var(--ease);appearance:none}
+select{padding-right:28px;cursor:pointer}
+select:focus,input[type="number"]:focus,.search-input:focus{border-color:var(--border-focus);background:var(--gold-soft);box-shadow:0 0 0 3px rgba(184,148,46,0.06)}
+select option{background:var(--bg2);color:var(--text-med)}
+.search-input{padding-left:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.2)' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='10' cy='10' r='7'/%3E%3Cline x1='21' y1='21' x2='15' x2='15' y2='15'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:8px center;background-size:12px}
+.year-range{display:flex;gap:6px;align-items:center}
+.year-range input{width:44%;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px}
+.year-range .sep{color:var(--text-dim);font-size:10px;flex-shrink:0}
+.btn{font-size:12px;font-weight:600;padding:8px 16px;border-radius:6px;border:none;cursor:pointer;transition:all 0.2s var(--ease);font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:6px}
+.btn:active{transform:scale(0.97)}
+.btn-primary{background:var(--gold);color:var(--bg)}.btn-primary:hover{background:var(--gold-light);box-shadow:0 2px 12px rgba(184,148,46,0.25);transform:translateY(-1px)}
+.btn-second{background:transparent;color:var(--text-dim);border:1px solid var(--border)}.btn-second:hover{border-color:var(--gold-dim);color:var(--gold);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text-dim);border:none;padding:5px 8px;border-radius:4px}.btn-ghost:hover{background:var(--gold-soft);color:var(--gold)}
+.btn-row{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}.btn-row .btn{flex:1}
+.chart-container{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;min-height:340px;position:relative;overflow:hidden}
+.chart-container canvas{width:100%!important;height:300px!important;display:block;border-radius:4px}
+.chart-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:10px}
+.chart-title{font-size:13px;font-weight:600;color:var(--text-med);line-height:1.3}
+.chart-title .sub{display:block;font-size:10px;font-weight:400;color:var(--text-dim);margin-top:2px}
+.chart-actions{display:flex;gap:4px;flex-shrink:0}
+.chart-hint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;color:var(--text-dim);text-align:center;padding:30px;gap:8px}
+.chart-hint .hint-icon{font-size:28px;opacity:0.3}
+.chart-skeleton{position:absolute;inset:0;display:flex;flex-direction:column;padding:20px;gap:10px;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.chart-skeleton.active{opacity:1}
+.chart-skeleton .sk-bar{height:8px;border-radius:4px;background:linear-gradient(90deg,var(--border) 30%,rgba(255,255,255,0.04) 60%,var(--border) 100%);background-size:200px 100%;animation:shimmer 1.5s infinite}
+.chart-skeleton .sk-chart{flex:1;border-radius:6px;background:linear-gradient(90deg,var(--border) 20%,rgba(255,255,255,0.03) 50%,var(--border) 80%);background-size:200px 100%;animation:shimmer 1.5s infinite}
+.report{display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:16px;animation:slideUp 0.4s var(--ease-out)}
+.report.active{display:block}
+.report-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.report-header h2{font-size:17px;color:var(--text-high);font-weight:600;line-height:1.3}
+.report .meta{font-size:10px;color:var(--text-dim);margin-top:2px}.report .meta span{display:inline-block;margin-right:16px}
+.report-actions{display:flex;gap:6px;flex-shrink:0}
+.report h3{font-size:11px;font-weight:600;color:var(--gold);margin-top:18px;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.6px;display:flex;align-items:center;gap:6px}
+.report h3::after{content:'';flex:1;height:1px;background:var(--gold-dim)}
+.report p{font-size:12px;line-height:1.7;color:var(--text);margin-bottom:8px}
+.report table{width:100%;border-collapse:collapse;margin:10px 0 14px;font-size:11px}
+.report td,.report th{padding:6px 10px;border-bottom:1px solid var(--border);text-align:left}
+.report th{color:var(--text-dim);font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:0.3px}
+.report td{color:var(--text)}.report tr:hover td{background:var(--gold-soft)}
+.report .source-box{background:var(--gold-soft);border:1px solid var(--gold-dim);border-radius:6px;padding:10px 12px;margin:8px 0;font-size:10px;color:var(--text-dim);line-height:1.6}
+.report .source-box strong{color:var(--gold-light);font-weight:500}
+.report .disclaimer{font-size:10px;color:var(--text-dim);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);line-height:1.5;font-style:italic}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0 16px}
+.stat-card{padding:14px 10px;background:rgba(255,255,255,0.008);border:1px solid var(--border);border-radius:8px;text-align:center;transition:all 0.2s var(--ease)}
+.stat-card:hover{background:var(--gold-soft);border-color:var(--gold-dim);transform:translateY(-1px)}
+.stat-card .num{font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--gold-light);font-weight:600;letter-spacing:-0.5px}
+.stat-card .lbl{font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-top:3px}
+.compare-section{margin-top:16px;display:none}
+.compare-section.visible{display:block;animation:slideUp 0.3s var(--ease-out)}
+.compare-section h3{font-size:11px;font-weight:600;color:var(--text-dim);margin-bottom:10px;letter-spacing:0.5px;text-transform:uppercase}
+.compare-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.compare-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 10px;text-align:center;cursor:pointer;transition:all 0.25s var(--ease)}
+.compare-card:hover{background:var(--card-hover);border-color:var(--gold-dim);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+.compare-card.active{border-color:var(--gold);background:var(--gold-soft);box-shadow:0 0 0 1px var(--gold-dim)}
+.compare-card .flag{font-size:10px;font-weight:500;color:var(--text-med);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.compare-card .val{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold-light);margin:2px 0;font-weight:500}
+.compare-card .yr{font-size:9px;color:var(--text-dim)}
+.compare-card .bar-bg{height:3px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden}
+.compare-card .bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));border-radius:2px;transition:width 0.6s var(--ease-out)}
+.multi-tag{font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all 0.2s var(--ease);font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:4px}
+.multi-tag:hover{border-color:var(--gold-dim);color:var(--text-med)}
+.multi-tag.active{background:var(--gold-soft);border-color:var(--gold-dim);color:var(--gold-light)}
+.multi-tag .remove{font-size:12px;opacity:0.5;margin-left:2px}.multi-tag .remove:hover{opacity:1}
+.methodology-trigger{text-align:center;margin-top:20px}
+.methodology{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-top:16px;max-height:0;overflow:hidden;transition:max-height 0.5s var(--ease),opacity 0.3s var(--ease),padding 0.3s var(--ease);opacity:0;padding-top:0;padding-bottom:0}
+.methodology.open{max-height:1200px;opacity:1;padding:20px 24px}
+.methodology h4{font-size:11px;color:var(--gold);font-weight:600;margin-bottom:6px;margin-top:14px;text-transform:uppercase;letter-spacing:0.5px}.methodology h4:first-child{margin-top:0}
+.methodology p{font-size:11px;color:var(--text);line-height:1.7;margin-bottom:6px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);padding:10px 20px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--text-med);z-index:1000;opacity:0;transition:all 0.4s var(--ease);pointer-events:none;box-shadow:0 4px 24px rgba(0,0,0,0.3)}
+.toast.visible{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(52,199,89,0.3);color:rgba(52,199,89,0.8)}
+.toast.error{border-color:rgba(255,69,58,0.3);color:rgba(255,69,58,0.8)}
+#countryDropdown{position:absolute;top:100%;left:0;right:0;z-index:50;background:var(--bg3);border:1px solid var(--border);border-radius:6px;margin-top:2px;max-height:200px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.4);display:none}
+#countryDropdown .dd-item{padding:7px 10px;font-size:12px;color:var(--text-med);cursor:pointer;transition:background 0.15s}
+#countryDropdown .dd-item:hover{background:var(--gold-soft);color:var(--gold-light)}
+#countryDropdown .dd-item.active{background:var(--gold-dim);color:var(--gold-light)}
+#countryDropdown .dd-empty{padding:12px;text-align:center;font-size:11px;color:var(--text-dim)}
+@media(max-width:900px){.two-panel{grid-template-columns:1fr}.two-panel .control-group{order:2}.two-panel .chart-container{order:1;min-height:300px}.stat-grid{grid-template-columns:repeat(2,1fr)}header{padding:12px 20px}.container{padding:20px}}
+@media(max-width:600px){header{flex-wrap:wrap;gap:8px;padding:10px 14px}header nav a{font-size:10px;padding:4px 7px}.container{padding:14px}.control-group{padding:14px}.chart-container{padding:14px;min-height:260px}.chart-container canvas{height:220px!important}.stat-grid{grid-template-columns:1fr}.report{padding:16px}.report-header{flex-direction:column}.report-actions{width:100%}.report-actions .btn{flex:1}.compare-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:400px){.compare-grid{grid-template-columns:1fr 1fr}.btn-row{flex-direction:column}}
+.beta-badge{position:absolute;top:12px;right:16px;display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#d4a84b,#c4952e);color:#1a1a2e;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;box-shadow:0 2px 6px rgba(0,0,0,.25);z-index:200;cursor:default;transition:transform .2s ease}.beta-badge:hover{transform:scale(1.08)}.beta-badge i{font-size:10px}.beta-badge .version{font-weight:400;opacity:.7;margin-left:2px}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<header>
+  <div class="brand"><div class="brand-icon">A</div><h1>ECOWAS <span>Economic Analyzer</span></h1></div>
+  <nav><a class="active" data-section="analyze" onclick="showSection('analyze')">Analyze</a><a data-section="compare" onclick="showSection('compare')">Compare</a><a data-section="sources" onclick="showSection('sources')">Sources</a></nav>
+  <div class="beta-badge" title="In Development"><i class="fas fa-flask"></i> BETA <span class="version">v2.0.1</span></div>
+</header>
+<div class="container" id="app">
+  <div id="appLoading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:16px;animation:fadeIn 0.3s">
+    <div style="width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite"></div>
+    <div style="font-size:13px;color:var(--text-dim)">Loading economic data from 15 West African countries…</div>
+    <div id="loadProgress" style="font-size:10px;color:var(--text-dim)">0 / 15</div>
+    <div style="width:200px;height:3px;background:var(--border);border-radius:2px;overflow:hidden"><div id="loadBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));border-radius:2px;transition:width 0.3s var(--ease-out)"></div></div>
+  </div>
+  <div id="appContent" style="display:none">
+    <div class="two-panel">
+      <div class="control-group">
+        <h3>Parameters</h3>
+        <div class="ctrl-field"><label>Country</label><div class="select-wrap"><div style="position:relative"><input class="search-input" id="countrySearch" type="text" placeholder="Search countries…" autocomplete="off"><div id="countryDropdown"></div></div></div><select id="countrySelect" style="display:none"></select></div>
+        <div class="ctrl-field"><label>Indicator <span id="indicatorCount" style="font-weight:400;opacity:0.5"></span></label><div class="select-wrap"><select id="indicatorSelect"></select></div></div>
+        <div class="ctrl-field"><label>Year Range</label><div class="year-range"><input type="number" id="yearFrom" value="2000" min="1960" max="2024"><span class="sep">—</span><input type="number" id="yearTo" value="2024" min="1960" max="2024"></div></div>
+        <div class="btn-row"><button class="btn btn-primary" onclick="generateAnalysis()"><i class="fas fa-chart-simple"></i>&nbsp;Analyze</button><button class="btn btn-second" onclick="generateReport()"><i class="fas fa-file-lines"></i>&nbsp;Report</button><button class="btn btn-ghost" onclick="exportChart()" title="Export as PNG"><i class="fas fa-image"></i>&nbsp;Export</button></div>
+      </div>
+      <div class="chart-container" id="chartBox">
+        <div class="chart-header"><div class="chart-title" id="chartTitle">Select a country &amp; indicator<span class="sub">Choose parameters above and click <strong>Analyze</strong></span></div><div class="chart-actions"><button class="btn btn-ghost" onclick="exportChart()" title="Export as PNG"><i class="fas fa-download"></i></button></div></div>
+        <canvas id="chartCanvas"></canvas>
+        <div class="chart-hint" id="chartHint"><div class="hint-icon"><i class="fas fa-chart-simple" style="font-size:28px;opacity:0.3"></i></div><div>Choose a country &amp; indicator, then click <strong>Analyze</strong></div></div>
+        <div class="chart-skeleton" id="chartSkeleton"><div class="sk-bar" style="width:40%"></div><div class="sk-chart"></div></div>
+      </div>
+    </div>
+    <div id="multiCompareSection" style="display:none;animation:slideUp 0.3s var(--ease-out)">
+      <div class="control-group" style="padding:14px 18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+          <div style="font-size:11px;color:var(--text-dim);font-weight:500"><i class="fas fa-arrows-rotate"></i>&nbsp;Multi-Country Overlay</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap" id="multiCountryTags"></div>
+          <button class="btn btn-ghost" onclick="clearMultiCompare()" style="font-size:10px">Clear All</button>
+        </div>
+      </div>
+    </div>
+    <div class="compare-section" id="compareSection"><h3><i class="fas fa-globe-africa"></i>&nbsp;Cross-Country Comparison — Latest Year</h3><div class="compare-grid" id="compareGrid"></div></div>
+    <div class="report" id="reportBox">
+      <div class="report-header"><div><h2 id="reportTitle">Economic Analysis Report</h2><div class="meta"><span id="reportMeta"></span></div></div><div class="report-actions"><button class="btn btn-second" onclick="copyReport()"><i class="fas fa-clipboard"></i>&nbsp;Copy</button><button class="btn btn-second" onclick="downloadReportText()"><i class="fas fa-download"></i>&nbsp;Text</button><button class="btn btn-primary" onclick="exportPDF()"><i class="fas fa-download"></i>&nbsp;PDF</button></div></div>
+      <div id="reportContent"></div>
+    </div>
+    <div class="methodology-trigger"><button class="btn btn-second" onclick="toggleMethodology()"><i class="fas fa-book"></i>&nbsp;Methodology &amp; Sources</button></div>
+    <div class="methodology" id="methodology">
+      <h4>Data Sources</h4><p>All data sourced from the <strong>World Bank World Development Indicators</strong> (WDI) database, accessed via the ADG ECOWAS Analytics pipeline. 88 indicators across 15 West African countries, covering GDP, population, health, education, energy, trade, and more.</p>
+      <div class="source-box"><strong>Primary Source:</strong> World Bank Group. "World Development Indicators." <em>data.worldbank.org</em>. Accessed via ADG ECOWAS_Analysis dataset.</div>
+      <h4>Indicator Categories</h4><p><i class="fas fa-arrow-trend-up"></i>&nbsp;<strong>Economic:</strong> GDP, inflation, Gini, FDI, trade, savings, revenue</p><p><i class="fas fa-users"></i>&nbsp;<strong>Demographic:</strong> Population, fertility, density, labor force</p><p><i class="fas fa-hospital"></i>&nbsp;<strong>Health:</strong> Life expectancy, mortality, access to electricity</p><p><i class="fas fa-graduation-cap"></i>&nbsp;<strong>Education:</strong> Literacy rate, education expenditure</p><p><i class="fas fa-bolt"></i>&nbsp;<strong>Energy &amp; Environment:</strong> Energy use, renewables, CO₂, forest, PM2.5</p><p><i class="fas fa-satellite"></i>&nbsp;<strong>Infrastructure:</strong> Internet, mobile, fixed telephone subscriptions</p>
+      <div class="source-box"><strong>References:</strong> World Bank (2024). World Development Indicators. Washington, D.C.: World Bank Group. DOI: 10.57966/9H8T-2B42.</div>
+      <h4>Limitations</h4><p>Historical data for some countries (Liberia, Sierra Leone) has gaps during conflict periods. Data quality varies by indicator and reporting year.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const S={countries:[],indicators:[],data:{},multiCompare:[],currentCountry:'',currentIndicator:'',yearFrom:2000,yearTo:2024,numLoaded:0},A='/api/data/economic';
+function gt(n){const k=[['GDP','fa-chart-simple Economic'],['Gini','fa-chart-simple Economic'],['Inflation','fa-chart-simple Economic'],['Foreign direct investment','fa-chart-simple Economic'],['Current account','fa-chart-simple Economic'],['Exports','fa-chart-simple Economic'],['Imports','fa-chart-simple Economic'],['Gross savings','fa-chart-simple Economic'],['Revenue','fa-chart-simple Economic'],['Expense','fa-chart-simple Economic'],['Tax revenue','fa-chart-simple Economic'],['Net lending','fa-chart-simple Economic'],['Military expenditure','fa-chart-simple Economic'],['Population','fa-users Demographic'],['Fertility','fa-users Demographic'],['Population growth','fa-users Demographic'],['Population density','fa-users Demographic'],['Labor force','fa-users Demographic'],['Life expectancy','fa-hospital Health'],['Mortality','fa-hospital Health'],['Maternal','fa-hospital Health'],['Access to electricity','fa-hospital Health'],['Literacy','fa-graduation-cap Education'],['Education','fa-graduation-cap Education'],['Energy use','fa-bolt Energy'],['Renewable','fa-bolt Energy'],['CO2','fa-bolt Energy'],['Forest','fa-bolt Energy'],['PM2.5','fa-bolt Energy'],['Fossil','fa-bolt Energy'],['Electricity consumption','fa-bolt Energy'],['Internet','fa-satellite Infrastructure'],['Mobile cellular','fa-satellite Infrastructure'],['Fixed telephone','fa-satellite Infrastructure'],['Self-employed','fa-users Demographic'],['Wage and salaried','fa-users Demographic'],['Vulnerable employment','fa-users Demographic'],['Employment to population','fa-users Demographic'],['Unemployment','fa-chart-simple Economic'],['Youth not in education','fa-graduation-cap Education'],['Cereal land','fa-bolt Energy'],['Ease of doing business','fa-chart-simple Economic'],['Number of registered','fa-chart-simple Economic'],['Merchandise','fa-chart-simple Economic'],['Surface area','fa-bolt Energy'],['Land area','fa-bolt Energy'],['Urban population living in slums','fa-hospital Health']];for(const[a,b]of k)if(n.includes(a))return b;return'fa-chart-simple Other'}function getIndicatorCategory(n){const r=gt(n);const c=r.split(' ');if(c.length>1)return'<i class="fas '+c[0]+'"></i>&nbsp;'+c[1];return'<i class="fas fa-tag"></i>&nbsp;Other'}
+function tt(m,t){const e=document.getElementById('toast');e.textContent=m;e.className='toast visible '+(t||'');clearTimeout(e._timer);e._timer=setTimeout(function(){e.classList.remove('visible')},2800)}
+
+// ─── Formatting Helpers ───
+function fmtVal(v){
+  if(v === undefined || v === null || isNaN(v)) return '\u2014';
+  if(Math.abs(v) >= 1e12) return (v/1e12).toFixed(2)+'T';
+  if(Math.abs(v) >= 1e9) return (v/1e9).toFixed(2)+'B';
+  if(Math.abs(v) >= 1e6) return (v/1e6).toFixed(2)+'M';
+  if(Math.abs(v) >= 1e3) return (v/1e3).toFixed(1)+'K';
+  if(Number.isInteger(v)) return v.toLocaleString();
+  return v.toFixed(2);
+}
+function fmtPct(v){
+  if(v === undefined || v === null || isNaN(v)) return '\u2014';
+  var p = v.toFixed(1);
+  return (v >= 0 ? '+' : '') + p + '%';
+}
+function fmtFull(v){
+  if(v === undefined || v === null || isNaN(v)) return '\u2014';
+  return v.toLocaleString(undefined, {maximumFractionDigits:2,minimumFractionDigits:0});
+}
+function ord(n){
+  if(n === undefined || n === null) return '';
+  var s = ['th','st','nd','rd'];
+  var v = n % 100;
+  return n + (s[(v-20)%10] || s[v] || s[0]);
+}
+
+async function loadEconomicData() {
+  const ld = document.getElementById('appLoading');
+  const ct = document.getElementById('appContent');
+  try {
+    const [cr, ir] = await Promise.all([
+      fetch(A + '/countries'),
+      fetch(A + '/indicators')
+    ]);
+    if (!cr.ok || !ir.ok) throw new Error('API unavailable');
+    const cd = await cr.json();
+    const idd = await ir.json();
+    S.countries = cd.countries || [];
+    S.indicators = (idd.indicators || []).map(function(i) { return typeof i === "string" ? i : i.name; });
+  // Filter out indicators with no data
+  try {
+    const sampleCountry = S.countries[0] || 'Ghana';
+    const sampleUrl = A + '/data?country=' + encodeURIComponent(sampleCountry) + '&year_from=2000&year_to=2024&limit=20000';
+    const sampleRes = await fetch(sampleUrl);
+    if (sampleRes.ok) {
+      const sampleJson = await sampleRes.json();
+      const populated = new Set();
+      (sampleJson.data || []).forEach(function(p) { populated.add(p.indicator); });
+      const before = S.indicators.length;
+      S.indicators = S.indicators.filter(function(i) { return populated.has(i); });
+      console.log('Filtered indicators: ' + before + ' -> ' + S.indicators.length);
+    }
+  } catch(e) { console.warn('Could not filter indicators', e); }
+    ld.style.display = 'none';
+    ct.style.display = 'block';
+    initApp();
+    tt(S.indicators.length + ' indicators x ' + S.countries.length + ' countries', 'success');
+  } catch (e) {
+    ld.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-dim)"><div style="font-size:36px;margin-bottom:12px">\u26a0\ufe0f</div><p style="font-size:14px;margin-bottom:8px">Could not load</p><p style="font-size:11px;color:rgba(255,255,255,0.3)">The API server may be unavailable. Check your connection and try again.</p><button class="btn btn-primary" style="margin-top:16px" onclick="location.reload()">Retry</button></div>';
+  }
+}
+
+function fetchData(country, indicator, yFrom, yTo) {
+  const url = A + '/data?country=' + encodeURIComponent(country)
+    + '&indicator=' + encodeURIComponent(indicator)
+    + '&year_from=' + yFrom + '&year_to=' + yTo + '&limit=20000';
+  return fetch(url).then(function(r) {
+    if (!r.ok) throw new Error('API error ' + r.status);
+    return r.json();
+  });
+}
+
+function getData(country, indicator, yearFrom, yearTo) {
+  // Stub - real data fetched on-demand via fetchData()
+  return { years: [], values: [], cdata: {} };
+}
+
+// ─── DRAW CHART ───
+function drawChart(configs, opts = {}) {
+  const canvas = document.getElementById('chartCanvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const W = (rect.width - 40);
+  const H = 300;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
+
+  ctx.clearRect(0, 0, W, H);
+
+  if (!configs || configs.length === 0) {
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.font = '12px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('No data available', W/2, H/2);
+    return;
+  }
+
+  // Collect all data points for scale
+  let allVals = [];
+  let minYear = Infinity, maxYear = -Infinity;
+  configs.forEach(c => {
+    c.years.forEach(y => { if(y < minYear) minYear = y; if(y > maxYear) maxYear = y; });
+    c.values.forEach(v => { if(v !== undefined && v !== null) allVals.push(v); });
+  });
+
+  if (allVals.length === 0) {
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.font = '12px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('No data available', W/2, H/2);
+    return;
+  }
+
+  const pad = { top: 24, bottom: 32, left: 58, right: 22 };
+  const cw = W - pad.left - pad.right;
+  const ch = H - pad.top - pad.bottom;
+
+  const minV = Math.min(...allVals);
+  const maxV = Math.max(...allVals);
+  const range = maxV - minV || 1;
+  const yMin = minV - range * 0.08;
+  const yMax = maxV + range * 0.08;
+  const yRng = yMax - yMin || 1;
+
+  const xScale = (y, totalYears) => pad.left + ((y - minYear) / (maxYear - minYear || 1)) * cw;
+  const yScale = (v) => pad.top + ch - ((v - yMin) / yRng) * ch;
+
+  // Grid lines (5 horizontal)
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 0.5;
+  ctx.font = '9px JetBrains Mono, monospace';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = 'rgba(255,255,255,0.14)';
+  for (let i = 0; i <= 5; i++) {
+    const y = pad.top + (i / 5) * ch;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    const val = yMax - (i / 5) * yRng;
+    ctx.fillText(fmtVal(val), pad.left - 8, y + 3);
+  }
+
+  // X labels
+  ctx.textAlign = 'center';
+  const yearRange = maxYear - minYear || 1;
+  const labelStep = Math.max(1, Math.floor(yearRange / 7));
+  for (let y = minYear; y <= maxYear; y += labelStep) {
+    ctx.fillText(y, xScale(y), H - 6);
+  }
+
+  // Draw for each config
+  const colors = ['#b8942e', '#5b9bd5', '#70ad47', '#ed7d31', '#ff4081', '#00bcd4', '#8e24aa', '#ffb300'];
+  const COLORS = configs.map((_, i) => colors[i % colors.length]);
+
+  configs.forEach((cfg, idx) => {
+    const color = COLORS[idx];
+    const pts = cfg.years.map((y, i) => ({ x: xScale(y), y: yScale(cfg.values[i]) }));
+
+    // Area fill
+    const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + ch);
+    grad.addColorStop(0, color.replace(')', ',0.12)').replace('rgb', 'rgba').replace('#', '').length > 7 ? color + '1e' : 'rgba(184,148,46,0.12)');
+    const alphaColor = (c) => {
+      const r = parseInt(c.slice(1,3),16), g = parseInt(c.slice(3,5),16), b = parseInt(c.slice(5,7),16);
+      return `rgba(${r},${g},${b},0.10)`;
+    };
+    grad.addColorStop(0, alphaColor(color));
+    grad.addColorStop(1, alphaColor(color).replace('0.10','0.0'));
+
+    ctx.beginPath();
+    if (pts.length > 0) {
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+      ctx.lineTo(pts[pts.length-1].x, pad.top + ch);
+      ctx.lineTo(pts[0].x, pad.top + ch);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+
+    // Line
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = idx === 0 ? 2.5 : 2;
+    ctx.stroke();
+
+    // Dots
+    pts.forEach((p, i) => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, idx === 0 && i === pts.length-1 ? 4 : 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(8,12,20,0.7)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+
+    // Last value label
+    const lastP = pts[pts.length-1];
+    ctx.fillStyle = color;
+    ctx.font = (idx === 0 ? 'bold 11px' : '10px') + ' Inter, sans-serif';
+    ctx.textAlign = 'center';
+    const lastVal = cfg.values[cfg.values.length-1];
+    ctx.fillText(fmtVal(lastVal), lastP.x, lastP.y - (idx === 0 ? 12 : 8));
+
+    // First value label (dim)
+    if (idx === 0 && pts.length > 1) {
+      ctx.fillStyle = 'rgba(255,255,255,0.18)';
+      ctx.font = '9px Inter, sans-serif';
+      ctx.fillText(fmtVal(cfg.values[0]), pts[0].x, pts[0].y - 8);
+    }
+  });
+
+  // Legend (for multi)
+  if (configs.length > 1) {
+    const lgX = W - 12, lgY = 10;
+    ctx.font = '9px Inter, sans-serif';
+    ctx.textAlign = 'right';
+    configs.forEach((cfg, i) => {
+      const y = lgY + i * 16;
+      ctx.fillStyle = COLORS[i];
+      ctx.fillRect(lgX - 70, y, 8, 8);
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.fillText(cfg.label || cfg.country, lgX - 8, y + 7);
+    });
+  }
+}
+
+// ─── GENERATE ANALYSIS ───
+function generateAnalysis() {
+  const country = document.getElementById('countrySearch').getAttribute('data-selected') || S.countries[0];
+  const indicator = document.getElementById('indicatorSelect').value;
+  const yFrom = parseInt(document.getElementById('yearFrom').value) || 2000;
+  const yTo = parseInt(document.getElementById('yearTo').value) || 2024;
+  if (!country || !indicator) { tt('Please select', 'error'); return; }
+  S.currentCountry = country; S.currentIndicator = indicator; S.yearFrom = yFrom; S.yearTo = yTo;
+  document.getElementById('chartHint').style.display = 'none';
+  document.getElementById('chartSkeleton').classList.add('active');
+  const targets = [{c: country, label: country}];
+  S.multiCompare.forEach(function(mc) { if (mc !== country) targets.push({c: mc, label: mc}); });
+  Promise.all(targets.map(function(t) {
+    return fetchData(t.c, indicator, yFrom, yTo).then(function(j) {
+      return {label: t.label, years: (j.data||[]).map(function(d){return d.year;}), values: (j.data||[]).map(function(d){return d.value;})};
+    }).catch(function() { return {label: t.label, years: [], values: []}; });
+  })).then(function(results) {
+    document.getElementById('chartSkeleton').classList.remove('active');
+    const configs = results.filter(function(r) { return r.values.length > 0; });
+    if (configs.length === 0) {
+      document.getElementById('chartTitle').innerHTML = 'No data available<span class="sub">No data for this combo</span>';
+      return;
+    }
+    const primary = results[0];
+    const title = document.getElementById('chartTitle');
+    title.innerHTML = indicator + ' - <strong>' + country + '</strong>';
+    if (S.multiCompare.length > 0) {
+      const allC = [country].concat(S.multiCompare).filter(function(v,i,a){return a.indexOf(v)===i;});
+      title.innerHTML += '<span class="sub">Overlay: ' + allC.join(', ') + '</span>';
+    } else if (primary.years.length > 1) {
+      const first = primary.values[0], last = primary.values[primary.values.length-1];
+      const pct = first !== 0 ? ((last-first)/first*100) : 0;
+      title.innerHTML += '<span class="sub">' + fmtVal(first) + ' (' + primary.years[0] + ') - ' + fmtVal(last) + ' (' + primary.years[primary.years.length-1] + ') ' + fmtPct(pct) + '</span>';
+    } else if (primary.years.length === 1) {
+      title.innerHTML += '<span class="sub">' + fmtVal(primary.values[0]) + ' (' + primary.years[0] + ')</span>';
+    }
+    drawChart(configs);
+    fetchCompareData(country, indicator, yTo);
+    updateMultiCountryTags(country, indicator, yFrom, yTo);
+  });
+}
+
+function initApp() {
+  // Populate indicator dropdown
+  const sel = document.getElementById('indicatorSelect');
+  sel.innerHTML = S.indicators.map(ind => `<option value="${ind.replace(/"/g,'&quot;')}">${ind}</option>`).join('');
+  
+  // Update indicator count
+  document.getElementById('indicatorCount').textContent = '(' + S.indicators.length + ')';
+  
+  // Init country search
+  initCountrySearch();
+  
+  // Default indicator: GDP growth
+  const gdpIdx = S.indicators.findIndex(i => i === 'GDP (current US$)');
+  if (gdpIdx >= 0) sel.selectedIndex = gdpIdx;
+  
+  // Set default year range
+  document.getElementById('yearFrom').value = 2000;
+  document.getElementById('yearTo').value = 2024;
+  
+  // Generate initial chart
+  setTimeout(generateAnalysis, 300);
+  
+  // Set up event listeners for indicator/year changes
+  sel.addEventListener('change', generateAnalysis);
+  document.getElementById('yearFrom').addEventListener('change', generateAnalysis);
+  document.getElementById('yearTo').addEventListener('change', generateAnalysis);
+  document.getElementById('yearFrom').addEventListener('input', generateAnalysis);
+  document.getElementById('yearTo').addEventListener('input', generateAnalysis);
+}
+
+function initCountrySearch() {
+  const input = document.getElementById('countrySearch');
+  const dd = document.getElementById('countryDropdown');
+
+  function render(q) {
+    const ql = (q || '').toLowerCase().trim();
+    const filtered = ql ? S.countries.filter(c => c.toLowerCase().includes(ql)) : S.countries;
+    const sel = input.getAttribute('data-selected');
+
+    if (!filtered.length) {
+      dd.innerHTML = '<div class="dd-empty">No countries match "' + q + '"</div>';
+      dd.style.display = 'block';
+      return;
+    }
+
+    dd.innerHTML = filtered.map(c =>
+      `<div class="dd-item${c === sel ? ' active' : ''}" data-country="${c}" onclick="selectCountry('${c.replace(/'/g, "\\'")}')">${c}</div>`
+    ).join('');
+    dd.style.display = 'block';
+  }
+
+  input.addEventListener('input', () => render(input.value));
+  input.addEventListener('focus', () => render(input.value));
+  input.addEventListener('blur', () => setTimeout(() => { dd.style.display = 'none'; }, 200));
+
+  // Set first country as default
+  if (S.countries.length > 0) selectCountry(S.countries[0]);
+}
+
+function selectCountry(c) {
+  const input = document.getElementById('countrySearch');
+  const dd = document.getElementById('countryDropdown');
+  input.value = c;
+  input.setAttribute('data-selected', c);
+  dd.style.display = 'none';
+  document.querySelectorAll('#countryDropdown .dd-item').forEach(el => el.classList.toggle('active', el.dataset.country === c));
+}
+
+// ─── COMPARISON ───
+function fetchCompareData(currentCountry, indicator, year) {
+  const grid = document.getElementById('compareGrid');
+  const section = document.getElementById('compareSection');
+  grid.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim)"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
+  section.classList.add('visible');
+  Promise.all(S.countries.map(function(c) {
+    return fetchData(c, indicator, year-1, year).then(function(j) {
+      const items = (j.data || []).filter(function(d) { return d.year === year; });
+      return {country: c, value: items.length > 0 ? items[0].value : undefined};
+    }).catch(function() { return {country: c, value: undefined}; });
+  })).then(function(cards) {
+    let maxVal = -Infinity;
+    cards.forEach(function(c) { if(c.value !== undefined && c.value > maxVal) maxVal = c.value; });
+    grid.innerHTML = cards.map(function(o) {
+      const fmt = o.value !== undefined ? fmtVal(o.value) : '—';
+      const pct = maxVal > 0 && o.value !== undefined ? (o.value / maxVal * 100) : 0;
+      const cls = o.country === currentCountry ? 'compare-card active' : 'compare-card';
+      const escName = o.country.replace(/'/g, "\\'");
+      return '<div class="' + cls + '" onclick="switchCountry(\'' + escName + '\')" ondblclick="addToMultiCompare(\'' + escName + '\')">'
+        + '<div class="flag">' + o.country + '</div>'
+        + '<div class="val">' + fmt + '</div>'
+        + '<div class="yr">' + year + '</div>'
+        + '<div class="bar-bg"><div class="bar-fill" style="width:' + pct + '%"></div></div>'
+        + '<div style="font-size:8px;color:var(--text-dim);margin-top:4px;opacity:0.4">click to view | dbl-click to overlay</div></div>';
+    }).join('');
+  });
+}
+
+function switchCountry(c) {
+  const input = document.getElementById('countrySearch');
+  input.value = c;
+  input.setAttribute('data-selected', c);
+  document.getElementById('multiCompareSection').style.display = 'none';
+  S.multiCompare = [];
+  generateAnalysis();
+  generateReport();
+}
+
+// ─── MULTI-COUNTRY OVERLAY ───
+function addToMultiCompare(country) {
+  if (S.multiCompare.includes(country)) return;
+  if (S.multiCompare.length >= 7) { tt('Maximum 7 overlay countries', 'error'); return; }
+  S.multiCompare.push(country);
+  generateAnalysis();
+}
+
+function removeFromMultiCompare(country) {
+  S.multiCompare = S.multiCompare.filter(c => c !== country);
+  if (S.multiCompare.length === 0) {
+    document.getElementById('multiCompareSection').style.display = 'none';
+  }
+  generateAnalysis();
+}
+
+function clearMultiCompare() {
+  S.multiCompare = [];
+  document.getElementById('multiCompareSection').style.display = 'none';
+  generateAnalysis();
+}
+
+function updateMultiCountryTags(currentCountry, indicator, yFrom, yTo) {
+  if (S.multiCompare.length === 0) {
+    document.getElementById('multiCompareSection').style.display = 'none';
+    return;
+  }
+  document.getElementById('multiCompareSection').style.display = 'block';
+  const tags = document.getElementById('multiCountryTags');
+  tags.innerHTML = S.multiCompare.map(c =>
+    `<span class="multi-tag active">${c}<span class="remove" onclick="removeFromMultiCompare('${c.replace(/'/g, "\\'")}')"><i class="fas fa-xmark"></i></span></span>`
+  ).join('');
+}
+
+// ─── REPORT ───
+function generateReport() {
+  const country = document.getElementById('countrySearch').getAttribute('data-selected') || S.countries[0];
+  const indicator = document.getElementById('indicatorSelect').value;
+  const yFrom = parseInt(document.getElementById('yearFrom').value) || 2000;
+  const yTo = parseInt(document.getElementById('yearTo').value) || 2024;
+  const box = document.getElementById('reportBox');
+  if (!box.classList.contains('active')) box.classList.add('active');
+  document.getElementById('reportTitle').textContent = 'Economic Analysis: ' + indicator + ' - ' + country;
+  document.getElementById('reportMeta').innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading...';
+  fetchData(country, indicator, yFrom, yTo).then(function(j) {
+    const arr = j.data || [];
+    const years = arr.map(function(d) { return d.year; });
+    const values = arr.map(function(d) { return d.value; });
+    document.getElementById('reportMeta').textContent = 'Period: ' + yFrom + '-' + yTo + ' | Generated: ' + new Date().toISOString().slice(0,10);
+    renderReportContent(years, values);
+  }).catch(function() {
+    document.getElementById('reportContent').innerHTML = '<p style="color:var(--red)">Data unavailable.</p>';
+  });
+}
+
+function renderReportContent(years, values) {
+  if (!years || years.length === 0) {
+    document.getElementById('reportContent').innerHTML = '<p>No data available for this selection.</p>';
+    return;
+  }
+  const min = Math.min.apply(null, values);
+  const max = Math.max.apply(null, values);
+  const avg = values.reduce(function(a,b){return a+b;},0) / values.length;
+  const first = values[0], last = values[values.length-1];
+  const change = last - first;
+  const pctChange = first !== 0 ? (change / first * 100) : 0;
+  const bestIdx = values.indexOf(max);
+  const worstIdx = values.indexOf(min);
+  let html = '<div class="report-section"><h4>Key Statistics</h4><ul>';
+  html += '<li>Highest: ' + fmtVal(max) + ' (' + years[bestIdx] + ')</li>';
+  html += '<li>Lowest: ' + fmtVal(min) + ' (' + years[worstIdx] + ')</li>';
+  html += '<li>Average: ' + fmtVal(avg) + '</li>';
+  html += '<li>Change: ' + fmtVal(change) + ' (' + fmtPct(pctChange) + ')</li></ul></div>';
+  html += '<div class="report-section"><h4>Year-by-Year</h4><table class="report-table"><tr><th>Year</th><th>Value</th><th>Change</th></tr>';
+  for (var i = 0; i < years.length; i++) {
+    const y = years[i], v = values[i];
+    const ch = i > 0 ? (v - values[i-1]) : 0;
+    const chStr = ch > 0 ? '+' + fmtVal(ch) : fmtVal(ch);
+    html += '<tr><td>' + y + '</td><td>' + fmtVal(v) + '</td><td>' + (i > 0 ? chStr : '&mdash;') + '</td></tr>';
+  }
+  html += '</table></div>';
+  document.getElementById('reportContent').innerHTML = html;
+}
+
+ n > 1 ? (n * sxy - sx * sy) / (n * sx2 - sx * sx) : 0;
+
+  let html = `
+  <div class="stat-grid">
+    <div class="stat-card"><div class="num">${fmtFull(last)}</div><div class="lbl">Current (${yTo})</div></div>
+    <div class="stat-card"><div class="num">${fmtPct(pctChange)} ${growth}</div><div class="lbl">Change (${yFrom}→${yTo})</div></div>
+    <div class="stat-card"><div class="num">${ord(rank)} / ${total}</div><div class="lbl">West Africa Rank</div></div>
+  </div>
+
+  <h3>§1. Key Findings</h3>
+  <p><strong>${country}</strong> recorded <strong>${fmtFull(last)}</strong> in ${indicator} for ${yTo}, ranking <strong>${ord(rank)}</strong> among ${total} West African countries with available data.</p>
+  <p>Over the period <strong>${yFrom}–${yTo}</strong>, this represents a <strong>${fmtPct(pctChange)}</strong> ${pctChange > 0 ? 'increase' : 'decrease'} from ${fmtFull(first)} to ${fmtFull(last)}.</p>
+  <p>The minimum was ${fmtFull(min)} (${years[values.indexOf(min)]}), maximum ${fmtFull(max)} (${years[values.indexOf(max)]}), with a period average of ${fmtFull(avg)}.</p>`;
+
+  // Trend analysis
+  if (n >= 3) {
+    html += `<h3>§2. Trend Analysis</h3>
+    <p>The ${n}-year trend shows a <strong>${slope > 0 ? 'upward' : 'downward'}</strong> trajectory with an average annual change of <strong>${fmtFull(Math.abs(slope))}</strong> per year.</p>
+    <p>If linear trend continues, the projected value for <strong>${yTo + 5}</strong> would be approximately <strong>${fmtFull(last + slope * 5)}</strong>.</p>`;
+  }
+
+  // Regional context
+  html += `<h3>§3. Regional Context</h3>
+  <table><tr><th>Country</th><th>${indicator}</th><th>vs. ${country}</th></tr>`;
+  rankData.forEach(r => {
+    const diff = r.value ? ((last - r.value) / r.value * 100) : 0;
+    const arrowIcon2 = diff > 0 ? '<i class="fas fa-arrow-up"></i>' : diff < 0 ? '<i class="fas fa-arrow-down"></i>' : '<i class="fas fa-arrow-right"></i>';
+    html += `<tr><td>${r.country}</td><td>${fmtVal(r.value)}</td><td>${arrowIcon2} ${fmtPct(Math.abs(diff))}</td></tr>`;
+  });
+  html += `</table>`;
+
+  // Auto-comparison: available indicators for this country
+  html += `<h3>§4. Data Snapshot</h3>
+  <table><tr><th>Indicator</th><th>${yTo} Value</th><th>Category</th></tr>`;
+  let count = 0;
+  const keyIndicators = ['GDP (current US$)', 'GDP per capita (current US$)', 'GDP growth (annual %)', 'Population, total',
+    'Life expectancy at birth, total (years)', 'Inflation, consumer prices (annual %)', 'Population growth (annual %)',
+    'Internet users (per 100 people)', 'CO2 emissions (metric tons per capita)', 'Mortality rate, under-5 (per 1,000 live births)'];
+  keyIndicators.forEach(ind => {
+    const v = S.data[country]?.[ind]?.[yTo];
+    if (v !== undefined) {
+      html += `<tr><td>${ind}</td><td>${fmtFull(v)}</td><td>${getIndicatorCategory(ind)}</td></tr>`;
+      count++;
+    }
+  });
+  if (count === 0) {
+    // Fallback: show any available indicators
+    const avail = S.data[country] || {};
+    Object.keys(avail).slice(0, 10).forEach(ind => {
+      const v = avail[ind]?.[yTo];
+      if (v !== undefined) {
+        html += `<tr><td>${ind}</td><td>${fmtFull(v)}</td><td>${getIndicatorCategory(ind)}</td></tr>`;
+      }
+    });
+  }
+  html += `</table>`;
+
+  html += `<h3>§5. Data Sources &amp; Methodology</h3>
+  <div class="source-box">
+    <strong>Primary Data:</strong> World Bank — World Development Indicators.<br>
+    <strong>Indicator:</strong> ${indicator}.<br>
+    <strong>Pipeline:</strong> ADG ECOWAS Analytics (44K+ data points, 15 countries, 88 indicators).<br>
+    <strong>Access Date:</strong> ${new Date().toISOString().slice(0,10)}.<br>
+    <strong>Methodology:</strong> Standard World Bank methodology. GDP in current US$. Population based on UN sources.
+  </div>
+  <p class="disclaimer">This analysis uses automated data processing. Values are approximate and should be verified against original World Bank sources before use in formal research.</p>`;
+
+  document.getElementById('reportContent').innerHTML = html;
+  box.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ─── EXPORT / COPY ───
+function copyReport() {
+  const text = document.getElementById('reportBox').innerText;
+  navigator.clipboard.writeText(text).then(() => tt('Report copied to clipboard', 'success')).catch(() => tt('Failed to copy', 'error'));
+}
+
+function downloadReportText() {
+  const country = document.getElementById('countrySearch').getAttribute('data-selected') || S.countries[0];
+  const indicator = document.getElementById('indicatorSelect').value;
+  const text = document.getElementById('reportBox').innerText;
+  const blob = new Blob([text], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `ECOWAS_${country.replace(/\s+/g,'_')}_${indicator.replace(/[^a-zA-Z0-9]/g,'_').substring(0,30)}.txt`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  tt('Report downloaded', 'success');
+}
+
+function exportPDF() {
+  const country = document.getElementById('countrySearch').getAttribute('data-selected') || S.countries[0];
+  const indicator = document.getElementById('indicatorSelect').value;
+  const title = document.getElementById('reportTitle').outerHTML;
+  const meta = document.getElementById('reportMeta').outerHTML;
+  const content = document.getElementById('reportContent').innerHTML;
+
+  const w = window.open('', '', 'width=900,height=700');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ADG Economic Report - ${country}</title>
+  <style>
+    @page{margin:20mm 15mm}
+    body{font-family:Inter,sans-serif;color:#222;padding:0;max-width:700px;margin:0 auto;font-size:11px;line-height:1.5}
+    h2{font-size:18px;color:#111;font-weight:600}
+    h3{color:#b8942e;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-top:16px;border-bottom:1px solid #e0d5b8;padding-bottom:3px}
+    table{border-collapse:collapse;width:100%;margin:8px 0;font-size:10px}
+    td,th{border:1px solid #ddd;padding:4px 7px;text-align:left}
+    th{background:#f5f2e8;font-weight:500;font-size:9px;text-transform:uppercase}
+    tr:nth-child(even){background:#fafafa}
+    .stat-grid{display:flex;gap:10px;margin:12px 0}
+    .stat-card{flex:1;text-align:center;padding:10px;background:#f9f7f0;border-radius:4px}
+    .num{font-size:18px;font-weight:700;color:#b8942e;font-family:'Courier New',monospace}
+    .lbl{font-size:8px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
+    .source-box{background:#f5f2e8;border:1px solid #d4a843;padding:8px 10px;border-radius:4px;font-size:10px;line-height:1.5}
+    .disclaimer{font-size:9px;color:#999;margin-top:10px;font-style:italic}
+    .meta{font-size:9px;color:#999;margin-bottom:12px}
+    .report-header{border-bottom:2px solid #b8942e;padding-bottom:8px;margin-bottom:8px}
+  </style></head><body>`);
+  w.document.write('<div class="report-header"><h2>ADG ECOWAS Economic Analysis Report</h2></div>');
+  w.document.write('<p style="font-size:11px"><strong>' + indicator + '</strong> — ' + country + '</p>');
+  w.document.write('<p class="meta">Period: ' + document.getElementById('yearFrom').value + '–' + document.getElementById('yearTo').value + ' | Generated: ' + new Date().toISOString().slice(0,10) + '</p>');
+  w.document.write(content);
+  w.document.write('<p class="disclaimer">Source: World Bank WDI via ADG ECOWAS Analytics. Automated analysis—verify before formal use.</p>');
+  w.document.write('</body></html>');
+  w.document.close();
+  w.focus();
+  w.print();
+}
+
+function exportChart() {
+  const canvas = document.getElementById('chartCanvas');
+  // Get the indicator and country for filename
+  const country = document.getElementById('countrySearch').getAttribute('data-selected') || S.countries[0];
+  const indicator = document.getElementById('indicatorSelect').value;
+  const link = document.createElement('a');
+  link.download = `ECOWAS_${country.replace(/\s+/g,'_')}_${indicator.replace(/[^a-zA-Z0-9]/g,'_').substring(0,25)}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  tt('Chart exported', 'success');
+}
+
+// ─── SECTIONS ───
+function showSection(section) {
+  document.querySelectorAll('header nav a').forEach(a => a.classList.remove('active'));
+  document.querySelector(`header nav a[data-section="${section}"]`)?.classList.add('active');
+  if (section === 'sources') {
+    document.getElementById('methodology').classList.toggle('open');
+    document.getElementById('methodology').scrollIntoView({behavior:'smooth'});
+  } else if (section === 'compare') {
+    const cs = document.getElementById('compareSection');
+    if (cs.classList.contains('visible')) {
+      cs.scrollIntoView({behavior:'smooth'});
+    } else {
+      generateAnalysis();
+      setTimeout(() => document.getElementById('compareSection').scrollIntoView({behavior:'smooth'}), 400);
+    }
+  } else {
+    document.querySelector('.two-panel').scrollIntoView({behavior:'smooth'});
+  }
+}
+
+function toggleMethodology() {
+  document.getElementById('methodology').classList.toggle('open');
+}
+
+// ─── KEYBOARD SHORTCUTS ───
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const active = document.activeElement;
+    if (active && (active.id === 'countrySearch' || active.id === 'yearFrom' || active.id === 'yearTo')) {
+      generateAnalysis();
+    }
+  }
+});
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded', () => {
+  loadEconomicData();
+});
+
+</script>
+</body>
+</html>
